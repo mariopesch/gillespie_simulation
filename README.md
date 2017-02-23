@@ -1,2 +1,4 @@
 # gillespie_simulation
-Gillespie Simulation for chemical Reaktion 
+Gillespie Simulation for chemical Reaction 
+
+
