@@ -32,15 +32,39 @@
 #include <stdlib.h>
 #include <time.h>
 #include <iostream>
+#include <fstream>
 
 using namespace std;
 
-class gillespie{
+class Gillespie{
+
+  double NA, NB;
+
+  vector<double> molecules{200,50}; //Anzahl Moleküle N_A, N_B, ...
+
+  vector<double> reactions_rate{4.5e-1, 3e-2}; //Reaktionskonstanten k1 und k2
+  double nrReactions = 1000; // Anzahl der Reaktionen
+
+  double wplus, wminus, t;
+
+  // output file
+  ofstream fs;
     
-    
-public:
-    double randomnumber();
-    void doreaction();
+ public:
+
+  Gillespie();
+
+  double randomnumber();
+  void doreaction();
+
+  // -------------------
+  // getter and setter
+  // -------------------
+
+  double getNrReactions();
+  void setNrReactions(double n);
+
+
 };
 
 #endif // GILLESPIE_H

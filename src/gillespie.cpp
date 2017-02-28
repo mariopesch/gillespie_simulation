@@ -24,76 +24,84 @@
  *
  */
 
-#include <gillespie.h>
 #include <math.h>
 #include <vector>
 #include <iostream>
 #include <fstream>
 #include <random>
 
+#include <Gillespie.h>
+
 using namespace std;
 
-int i;
-double NA, NB, k1, k2, wplus, wminus, z, t;
-    
-double gillespie::randomnumber(){
+Gillespie::Gillespie() {
+
+  std::string filename = "timeSeries.csv";
+  fs.open(filename.c_str(),ios::out);
+  fs << "# t, NA, NB "<< endl;
+  cout << "writing header"<< endl;
+
+}
+
+
+
+double Gillespie::randomnumber(){
    
-    time_t t;
-    time(&t);
-        double r = 1.0*rand()/RAND_MAX; //generiere Zufallszahl zwischen 1 und 0.
-      //  cout << r <<endl;
+  double r = 1.0*rand()/RAND_MAX; //generiere Zufallszahl zwischen 1 und 0.
+  //  cout << r <<endl;
+  return r;
+
 }
 
-void gillespie::doreaction()
+void Gillespie::doreaction()
 {
-    vector<double>reactions_rate{4.5e-1,3e-2,10000}; //Reaktionskonstanten k1 und k2 und Anzahl der Reaktionen
-    vector<double>moleculs{2000,500,0.0}; //Anzahl Moleküle An
-    ofstream fs;
-    std::string filename = "data5.csv";
-    
-    
-    int numtray = 2;
-    
-    NA = moleculs[0];
-    NB = moleculs[1];
-    double t = 0;
-    int v;
-    k1 = reactions_rate[0];
-    k2 = reactions_rate[1];
-    z =  reactions_rate[2];
-    
-    fs.open(filename);
-    fs << "t, NA, NB "<< endl;
-    cout << "writing header"<< endl;
-    
-    for (int i = 0; i<z; i++){
-    double r = randomnumber();
-    double wplus = k2*NB;
-    double wminus =  k1*NA;
-    double a = wplus + wminus;
-    double r2 = randomnumber();
-    wplus = (k2*NB)/(k1*NA)+(k2*NB);
-    wminus = (k1*NA)/(k2*NB) + (k1*NA);
-    double u = (1/a)*log(1/r);
-    if (wplus < r2)
-        v = -1;
-    else 
-        v= 1;
-    
-    NA = NA+v;
-    NB = NB-v;
-    t = t + u;
-    fs << t <<","<< NA <<","<< NB << "," << k1 << ","<< k2<< endl;
-    //fs << t <<","<< NA <<","<< NB << ","<< r << "," << r2 << ","<< wminus<<","<<wplus<< endl;
-    cout << "writing data"<<endl;
-    
-    cout <<"NA"<< NA <<endl;
-    cout <<"NB"<< NB <<endl;
-    cout << t <<endl;
-    cout << r <<endl;
-    } 
-    fs.close();
+
+  double k0, k1;
+  double dmolecules;
+
+  double w0 = reactions_rate[0]*molecules[0];
+  double w1 = reactions_rate[1]*molecules[1];
+  double wtotal = w0 + w1;
+
+  k0 = reactions_rate[0];
+  k1 = reactions_rate[1];
+  
+  w1 /= wtotal;
+  w0 /= wtotal;
+
+  double r2 = randomnumber();
+  if (w1 < r2)
+    dmolecules = -1;
+  else 
+    dmolecules = 1;
+  
+  molecules[0] = molecules[0]+dmolecules;
+  molecules[1]= molecules[1]-dmolecules;
+  
+  double r1 = randomnumber();
+  double dt = (1.0/wtotal)*log(1.0/r1);
+
+  t = t + dt;
+  fs << t <<"  "<< molecules[0] <<"  "<< molecules[1] << endl;
+  
+  //fs << t <<","<< NA <<","<< NB << ","<< r << "," << r2 << ","<< wminus<<","<<wplus<< endl;
+
+  cout << "writing data" << endl;
+  
+  cout << "NA "<< molecules[0] << endl;
+  cout << "NB "<< molecules[1] << endl;
+  cout << t << endl;
+
 }
 
+  // -------------------
+  // getter and setter
+  // -------------------
 
+double Gillespie::getNrReactions() {
+  return nrReactions;
+}
+void Gillespie::setNrReactions(double n) {
+  nrReactions = n;
+}
 

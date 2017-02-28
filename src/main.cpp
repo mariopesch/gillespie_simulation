@@ -1,17 +1,22 @@
 #include <iostream>
-#include "gillespie.h"
 #include <fstream>
 #include <time.h>
 
+#include <Gillespie.h>
+
 using namespace std;
-
-gillespie reaction;
-
 
 
 int main(int argc, char **argv) {
-  srand (time(NULL)); // initiere Startzeitpunkt
-reaction.doreaction(); //starte Simulation
 
+    Gillespie gillespie;
+    
+    srand (time(NULL)); // initiere Startzeitpunkt
+    for (int i = 0; i<gillespie.getNrReactions(); i++){
+        
+        cout << i << endl;
+        
+        gillespie.doreaction(); //starte Simulation
+    }
 return 0;
 }
